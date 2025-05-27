@@ -5,12 +5,12 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY,
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_APP_ID
+  apiKey: "AIzaSyDCjSr0Wdr4X2rK0c-_G9XrFEHZYWOySrM",
+  authDomain: "foodie-8cff7.firebaseapp.com",
+  projectId: "foodie-8cff7",
+  storageBucket: "foodie-8cff7.firebasestorage.app",
+  messagingSenderId: "1059748661323",
+  appId: "1:1059748661323:web:285b4d5afe5fc74fb2e5ce"
 };
 
 // Initialize Firebase

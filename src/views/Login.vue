@@ -42,9 +42,11 @@
 import { ref } from 'vue'
 import { auth } from '../plugins/firebase'
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { useRouter } from 'vue-router'
 export default {
   name: 'Login',
   setup() {
+    const router = useRouter()
     const email = ref('')
     const password = ref('')
     const error = ref('')
@@ -57,16 +59,16 @@ export default {
       error.value = ''
       try {
         await signInWithEmailAndPassword(auth, email.value, password.value)
-        window.location.href = '/'
+        router.push('/home') // :white_check_mark: Safe push after login
       } catch (err) {
-        error.value = 'Login failed: Invalid email or password.'
+        error.value = 'Login failed: ' + err.message
       }
     }
     const handleSignup = async () => {
       error.value = ''
       try {
         await createUserWithEmailAndPassword(auth, email.value, password.value)
-        window.location.href = '/'
+        router.push('/home') // :white_check_mark: Safe push after signup
       } catch (err) {
         error.value = 'Signup failed: ' + err.message
       }
@@ -78,8 +80,8 @@ export default {
       isSignup,
       toggleForm,
       handleLogin,
-      handleSignup,
+      handleSignup
     }
-  },
+  }
 }
 </script>
