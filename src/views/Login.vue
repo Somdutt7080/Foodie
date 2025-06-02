@@ -4,7 +4,7 @@
       <v-col cols="12" sm="8" md="4">
         <v-card class="pa-6 rounded-xl login-card">
           <v-card-title class="text-center text-h5 font-weight-bold mb-4">
-            <v-avatar size="50" class="mx-auto mb-2">
+            <v-avatar size="50" class="mx-4 mb-3">
               <v-img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" />
             </v-avatar>
             <span>Login</span>
