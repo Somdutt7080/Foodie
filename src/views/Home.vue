@@ -1,67 +1,97 @@
 <template>
-  <v-container>
-    <!-- <v-row class="my-4" justify="space-between">
-      <v-btn color="primary" @click="$router.push('/by-letter')">
-        Search by Letter
-      </v-btn>
-      <v-btn color="secondary" @click="$router.push('/search')">
-        Search by Name
-      </v-btn>
-      <v-btn color="secondary" @click="$router.push('/ingredient')">
-        Search by Ingredient
-      </v-btn>
-    </v-row> -->
+  <v-container fluid class="home-container pa-10">
     <v-row>
       <v-col cols="12">
-        <h2>Browse Meals</h2>
+        <h2 class="text-h4 font-weight-bold text-primary mb-6">Browse Meals</h2>
       </v-col>
     </v-row>
+
     <v-row>
       <v-col
         v-for="meal in meals"
-        :key="meal.idMeal"
+        :key="meal.id"
         cols="12"
         sm="6"
-        md="4"
+        md="3"
+        class="d-flex justify-center"
       >
-     <v-card @click="$router.push(`/meal/${meal.idMeal}`)" class="hoverable" elevation="2">
-          <v-img :src="meal.strMealThumb" height="200px" />
-          <v-card-title>{{ meal.strMeal }}</v-card-title>
+        <v-card
+          @click="goToMeal(meal.id)"
+          class="meal-card"
+          elevation="2"
+          rounded="lg"
+        >
+          <v-img
+            :src="meal.strMealThumb"
+            height="140"
+            class="rounded-lg"
+            cover
+          />
+          <div class="card-text-wrapper">
+            <p class="meal-name">
+              {{ meal.strMeal }}
+            </p>
+          </div>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
 <script>
-import axios from 'axios'
+import { mapState } from 'vuex'
+
 export default {
   name: 'Home',
-  data() {
-    return {
-      meals: [],
-    }
+  computed: {
+    ...mapState('meals', ['firestoreMeals']),
+    meals() {
+      return this.firestoreMeals
+    },
   },
   methods: {
-    async fetchMeals() {
-      try {
-        const res = await axios.get('https://www.themealdb.com/api/json/v1/1/search.php?s=')
-        this.meals = res.data.meals
-      } catch (err) {
-        console.error('Failed to fetch meals:', err)
-      }
-    },
     goToMeal(id) {
       this.$router.push(`/meal/${id}`)
     },
   },
   mounted() {
-    this.fetchMeals()
+    this.$store.dispatch('meals/fetchFirestoreMeals')
   },
 }
 </script>
 
-
-
-
-
-
+<style scoped>
+.home-container {
+  background: #f9f3fc;
+  min-height: 100vh;
+  border-radius: 16px;
+}
+.meal-card {
+  width: 100%;
+  padding: 8px;
+  max-width: 270px;
+  background-color: #fffafc;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border-radius: 12px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.meal-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0px 10px 18px rgba(0, 0, 0, 0.15);
+}
+.card-text-wrapper {
+  padding: 12px;
+  text-align: center;
+  flex-grow: 1;
+}
+.meal-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+</style>

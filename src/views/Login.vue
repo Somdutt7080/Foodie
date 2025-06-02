@@ -1,36 +1,56 @@
 <template>
-  <v-container class="fill-height" fluid>
+  <v-container class="fill-height login-background" fluid>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
-        <v-card>
-          <v-card-title class="text-h5">
-            {{ isSignup ? 'Sign Up' : 'Login' }}
+        <v-card class="pa-6 rounded-xl login-card">
+          <v-card-title class="text-center text-h5 font-weight-bold mb-4">
+            <v-avatar size="50" class="mx-auto mb-2">
+              <v-img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" />
+            </v-avatar>
+            <span>Login</span>
           </v-card-title>
           <v-card-text>
             <v-form @submit.prevent="isSignup ? handleSignup() : handleLogin()">
               <v-text-field
-                label="Email"
                 v-model="email"
-                prepend-icon="mdi-email"
-                type="email"
+                label="Email address"
+                prepend-inner-icon="mdi-email-outline"
+                variant="outlined"
+                density="comfortable"
+                class="mb-3"
+                rounded
                 required
               />
               <v-text-field
-                label="Password"
                 v-model="password"
-                prepend-icon="mdi-lock"
+                label="Password"
+                prepend-inner-icon="mdi-lock-outline"
+                variant="outlined"
+                density="comfortable"
                 type="password"
+                class="mb-4"
+                rounded
                 required
               />
-              <v-btn type="submit" color="primary" block class="mt-4">
+              <v-btn
+                type="submit"
+                block
+                color="indigo-darken-2"
+                class="text-white py-3 rounded-lg mb-3"
+              >
                 {{ isSignup ? 'Sign Up' : 'Login' }}
               </v-btn>
-              <v-alert v-if="error" type="error" class="mt-2">
+              <v-alert v-if="error" type="error" class="mt-2" dense>
                 {{ error }}
               </v-alert>
-              <v-btn text block @click="toggleForm" class="mt-2">
-                {{ isSignup ? 'Already have an account? Login' : "Don't have an account? Sign Up" }}
-              </v-btn>
+              <div class="text-center mt-2">
+                <span>
+                  {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
+                  <a href="#" @click.prevent="toggleForm" class="text-indigo font-weight-bold">
+                    {{ isSignup ? 'Login' : 'Sign up' }}
+                  </a>
+                </span>
+              </div>
             </v-form>
           </v-card-text>
         </v-card>
@@ -39,49 +59,78 @@
   </v-container>
 </template>
 <script>
-import { ref } from 'vue'
-import { auth } from '../plugins/firebase'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
-import { useRouter } from 'vue-router'
+import { auth, db } from '../plugins/firebase'
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
+} from 'firebase/auth'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 export default {
   name: 'Login',
-  setup() {
-    const router = useRouter()
-    const email = ref('')
-    const password = ref('')
-    const error = ref('')
-    const isSignup = ref(false)
-    const toggleForm = () => {
-      error.value = ''
-      isSignup.value = !isSignup.value
-    }
-    const handleLogin = async () => {
-      error.value = ''
-      try {
-        await signInWithEmailAndPassword(auth, email.value, password.value)
-        router.push('/home') // :white_check_mark: Safe push after login
-      } catch (err) {
-        error.value = 'Login failed: ' + err.message
-      }
-    }
-    const handleSignup = async () => {
-      error.value = ''
-      try {
-        await createUserWithEmailAndPassword(auth, email.value, password.value)
-        router.push('/home') // :white_check_mark: Safe push after signup
-      } catch (err) {
-        error.value = 'Signup failed: ' + err.message
-      }
-    }
+  data() {
     return {
-      email,
-      password,
-      error,
-      isSignup,
-      toggleForm,
-      handleLogin,
-      handleSignup
+      email: '',
+      password: '',
+      error: '',
+      isSignup: false
+    }
+  },
+  methods: {
+    toggleForm() {
+      this.error = ''
+      this.isSignup = !this.isSignup
+    },
+    // :white_check_mark: Signup — with role: 'user'
+    async handleSignup() {
+      this.error = ''
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
+        const user = userCredential.user
+        const userRef = doc(db, 'users', user.uid)
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          role: 'user', // :point_left: important!
+          createdAt: serverTimestamp()
+        })
+        localStorage.setItem('userRole', 'user')
+        this.$router.push('/home')
+      } catch (err) {
+        this.error = 'Signup failed: ' + err.message
+      }
+    },
+    // :white_check_mark: Login — checks role
+    async handleLogin() {
+      this.error = ''
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password)
+        const user = userCredential.user
+        const userRef = doc(db, 'users', user.uid)
+        const userSnap = await getDoc(userRef)
+        if (!userSnap.exists() || !userSnap.data().role) {
+          this.error = 'User role not found in database.'
+          return
+        }
+        const userData = userSnap.data()
+        const role = userData.role
+        localStorage.setItem('userRole', role)
+        this.$router.push('/home')
+      } catch (err) {
+        this.error = 'Login failed: ' + err.message
+      }
     }
   }
 }
 </script>
+<style scoped>
+.login-background {
+  background: linear-gradient(to bottom right, #F5F0FF, #F7F7F7);
+}
+.login-card {
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+a {
+  text-decoration: none;
+}
+</style>
