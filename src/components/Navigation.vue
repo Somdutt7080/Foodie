@@ -24,9 +24,9 @@
           <v-list-item @click="$router.push('/search'); filterMenu = false">
             <v-list-item-title><v-icon start small>mdi-magnify</v-icon>By Name</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="$router.push('/ingredient'); filterMenu = false">
+          <!-- <v-list-item @click="$router.push('/ingredient'); filterMenu = false">
             <v-list-item-title><v-icon start small>mdi-fruit-cherries</v-icon>By Ingredient</v-list-item-title>
-          </v-list-item>
+          </v-list-item> -->
         </v-list>
       </v-card>
     </v-menu>
