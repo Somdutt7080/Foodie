@@ -1,4 +1,6 @@
 <template>
+  <FullPageLoader :show="loading" />
+
   <v-container fluid class="home-container pa-10">
     <v-row>
       <v-col cols="12">
@@ -38,26 +40,31 @@
   </v-container>
 </template>
 
-<script>
-import { mapState } from 'vuex'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import FullPageLoader from '../components/FullPageLoader.vue'
 
-export default {
-  name: 'Home',
-  computed: {
-    ...mapState('meals', ['firestoreMeals']),
-    meals() {
-      return this.firestoreMeals
-    },
-  },
-  methods: {
-    goToMeal(id) {
-      this.$router.push(`/meal/${id}`)
-    },
-  },
-  mounted() {
-    this.$store.dispatch('meals/fetchFirestoreMeals')
-  },
+const store = useStore()
+const router = useRouter()
+
+const loading = ref(true)
+const meals = computed(() => store.state.meals.firestoreMeals)
+
+const goToMeal = (id) => {
+  router.push(`/meal/${id}`)
 }
+
+onMounted(async () => {
+  try {
+    await store.dispatch('meals/fetchFirestoreMeals')
+  } catch (e) {
+    console.error('Failed to fetch meals:', e)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style scoped>
