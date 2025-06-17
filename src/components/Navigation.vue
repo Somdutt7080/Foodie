@@ -1,4 +1,3 @@
-<!-- components/Navigation.vue -->
 <template>
   <v-app-bar app color="indigo darken-3" dark elevation="6">
     <!-- Title -->
@@ -24,17 +23,14 @@
           <v-list-item @click="$router.push('/search'); filterMenu = false">
             <v-list-item-title><v-icon start small>mdi-magnify</v-icon>By Name</v-list-item-title>
           </v-list-item>
-          <!-- <v-list-item @click="$router.push('/ingredient'); filterMenu = false">
-            <v-list-item-title><v-icon start small>mdi-fruit-cherries</v-icon>By Ingredient</v-list-item-title>
-          </v-list-item> -->
         </v-list>
       </v-card>
     </v-menu>
 
-    <!-- Theme Toggle -->
-    <!-- <v-btn icon @click="toggleTheme">
-      <v-icon>{{ isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}</v-icon>
-    </v-btn> -->
+    <!-- Gallery Button -->
+    <v-btn text @click="$router.push('/gallery')">
+      Gallery
+    </v-btn>
 
     <!-- Admin/Login/Logout -->
     <v-btn v-if="user && userRole === 'admin'" text @click="$router.push('/admin')">
@@ -65,12 +61,6 @@ export default {
     }
   },
   mounted() {
-    // Theme preference
-    // const themePref = localStorage.getItem('theme')
-    // this.isDark = themePref === 'dark'
-    // this.$vuetify.theme.dark = this.isDark
-
-    // Auth state
     onAuthStateChanged(auth, async (u) => {
       this.user = u
       if (u) {

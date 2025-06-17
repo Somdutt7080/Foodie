@@ -7,15 +7,18 @@ import MealDetail from '../views/MealDetail.vue'
 import ByLetter from '../views/ByLetter.vue'
 import Search from '../views/Search.vue'
 import Ingredients from '../views/Ingredients.vue'
+import Gallery from '../views/Gallery.vue'
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', name: 'Login', component: Login },
   { path: '/home', name: 'Home', component: Home, meta: { requiresAuth: true } },
   { path: '/admin', name: 'Admin', component: Admin, meta: { requiresAuth: true } },
+  { path: '/gallery', name: 'Gallery', component: Gallery, meta: { requiresAuth: true } },
   { path: '/meal/:id', name: 'MealDetail', component: MealDetail, meta: { requiresAuth: true } },
   { path: '/by-letter', name: 'ByLetter', component: ByLetter, meta: { requiresAuth: true } },
   { path: '/search', name: 'Search', component: Search, meta: { requiresAuth: true } },
-  { path: '/ingredient', name: 'Ingredient', component: Ingredients, meta: { requiresAuth: true } }
+  { path: '/ingredient', name: 'Ingredient', component: Ingredients, meta: { requiresAuth: true } },
+  
 ]
 const router = createRouter({
   history: createWebHistory(),
